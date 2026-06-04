@@ -1,14 +1,9 @@
-name: Sync HF to GitHub
-
-on:
-  workflow_dispatch:
-
-jobs:
-  sync:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout target repo
-        uses: actions/checkout@v3
+- name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs track "*.bin"
+          git lfs track "*.safetensors"
+          git add .gitattributes
 
       - name: Clone from Hugging Face
         run: |
@@ -22,8 +17,10 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_TOKEN }}@github.com/${{ github.repository }}.git
+          
+          # הוספה וביצוע commit עם תמיכת LFS
           git add .
-          git commit -m "Sync from Hugging Face"
-          git push
+          git commit -m "Sync from Hugging Face with LFS"
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
