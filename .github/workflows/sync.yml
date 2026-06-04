@@ -1,0 +1,28 @@
+name: Sync HF to GitHub
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v3
+
+      - name: Clone from Hugging Face
+        run: |
+          git clone https://huggingface.co/Xenova/whisper-tiny hf_repo
+          rm -rf hf_repo/.git
+          cp -r hf_repo/* .
+          rm -rf hf_repo
+
+      - name: Push to GitHub
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "Sync from Hugging Face"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
